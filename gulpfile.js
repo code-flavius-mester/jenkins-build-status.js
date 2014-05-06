@@ -2,7 +2,8 @@ var gulp = require('gulp'),
 	jshint = require('gulp-jshint'),
 	uglify = require('gulp-uglify'),
 	rename = require('gulp-rename'),
-	git = require('gulp-git');
+	git = require('gulp-git'),
+	qunit = require('gulp-qunit');
 
 gulp.task('jshint', function(){
 	return gulp
@@ -12,7 +13,8 @@ gulp.task('jshint', function(){
 });
 
 gulp.task('test', function () {
-	return gulp;
+	return gulp.src('./tests/**/*.html')
+        .pipe(qunit());
 });
 
 gulp.task('minify', function(){

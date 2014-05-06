@@ -8,7 +8,8 @@
     "jshint-stylish" : "*",
     "gulp-uglify" : "*",
     "gulp-rename" : "*",
-    "gulp-git" : "*"
+    "gulp-git" : "*",
+    "gulp-qunit": "*"
   },
   "scripts":{
     "test": "./node_modules/gulp/bin/gulp.js test"
