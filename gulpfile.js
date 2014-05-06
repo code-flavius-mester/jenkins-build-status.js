@@ -3,7 +3,16 @@ var gulp = require('gulp'),
 	uglify = require('gulp-uglify'),
 	rename = require('gulp-rename'),
 	git = require('gulp-git'),
-	qunit = require('gulp-qunit');
+	qunit = require('gulp-qunit'),
+	terminal = require('child_process').exec;
+
+gulp.task('dependencies', function(callback){
+	terminal('node_modules/bower/bin/bower install', function (err, stdout, stderr) {
+    	console.log(stdout);
+    	console.log(stderr);
+    	callback(err);
+  	});
+});
 
 gulp.task('jshint', function(){
 	return gulp
@@ -12,7 +21,7 @@ gulp.task('jshint', function(){
 		.pipe(jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('test', function () {
+gulp.task('test', ['dependencies'], function () {
 	return gulp.src('./tests/**/*.html')
         .pipe(qunit());
 });
