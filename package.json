@@ -1,0 +1,16 @@
+{
+  "name": "teamcity-build-status.js",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies" :{
+    "gulp" : "*",
+    "gulp-jshint" : "*",
+    "jshint-stylish" : "*",
+    "gulp-uglify" : "*",
+    "gulp-rename" : "*",
+    "gulp-git" : "*"
+  },
+  "scripts":{
+    "test": "./node_modules/gulp/bin/gulp.js test"
+  }
+}
