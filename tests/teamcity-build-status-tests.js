@@ -15,6 +15,18 @@
 		equal(requests[0].uri, teamcityUrl + '/guestAuth/app/rest/projects/id:' + projectId);
 	});
 
+	test('Adds project id as id of project element', function(done){
+		var projectId = 'project90',
+			requests = [];
+		$.ajax = function(options){
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : projectId
+		});
+		equal($(DISPLAY_AREA_DIV_ID).find('#' + projectId + '.project').length, 1);
+	});
+
 	test('Requests build stages in JSON', function(){
 		var requests = [];
 		$.ajax = function(options){
@@ -28,12 +40,16 @@
 	});
 
 	test('Displays build stage of project that contains one build stage', function(){
-		var buildStageName = 'a stage ' + Math.random();
+		var buildStageName = 'a stage ' + Math.random(),
+			buildStageId = 'bt309';
 		$.ajax = function(options){
 			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
 					buildTypes : [
-						{ name : buildStageName }
+						{ 
+							id : buildStageId,
+							name : buildStageName
+						}
 					]
 				});
 			}
@@ -42,7 +58,7 @@
 			teamcityUrl : 'teamcityUrl',
 			projectId : 'projectId'
 		});
-		var displayedBuildStageName = $(DISPLAY_AREA_DIV_ID).find('.project .build-stage .name').text();
+		var displayedBuildStageName = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage .name').text();
 		equal(displayedBuildStageName, buildStageName);
 	});
 
@@ -53,7 +69,7 @@
 	};
 
 	var TeamCityBuildStatus = function(element, options){
-		var projectElement = $('<div>').addClass('project').appendTo(element),
+		var projectElement = $('<div>').attr('id', options.projectId).addClass('project').appendTo(element),
 			buildStageRepository = new BuildStageRepository(options),
 			buildStageDisplay = new BuildStageDisplay(projectElement);
 
@@ -71,6 +87,7 @@
 					.addClass('name')
 					.text(buildStage.name);
 			$('<div>')
+				.attr('id', buildStage.id)
 				.addClass('build-stage')
 				.append(nameElement)
 				.appendTo(projectElement);
@@ -88,6 +105,7 @@
 				}, 
 				success : function(result){
 					callback([{
+						id : result.buildTypes[0].id,
 						name: result.buildTypes[0].name
 					}]);
 				}
