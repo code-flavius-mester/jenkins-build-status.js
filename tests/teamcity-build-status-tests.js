@@ -34,17 +34,26 @@
 	};
 
 	var TeamCityBuildStatus = function(options){
-		var GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
+		var buildStageRepository = new BuildStageRepository(options),
+			GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
 
 		function init(){
+			buildStageRepository.getAll();
+		}
+
+		init();
+	};
+
+	var BuildStageRepository = function(options){
+		var GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
+
+		this.getAll = function(){
 			$.ajax({
 				uri : options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId,
 				headers : {
 					accept : 'application/json'
 				}
 			});
-		}
-
-		init();
+		};
 	};
 })(jQuery, undefined);
