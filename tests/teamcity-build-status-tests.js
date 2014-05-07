@@ -62,6 +62,33 @@
 		equal(displayedBuildStageName, buildStageName);
 	});
 
+	test('Displays second build stage of project that contains multiple build stages', function(){
+		var buildStageName = 'a stage ' + Math.random(),
+			buildStageId = 'bt309';
+		$.ajax = function(options){
+			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : [
+						{
+							id : 'anId',
+							name : 'name'
+						},
+						{ 
+							id : buildStageId,
+							name : buildStageName
+						}
+					]
+				});
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : 'projectId'
+		});
+		var displayedBuildStageName = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage .name').text();
+		equal(displayedBuildStageName, buildStageName);
+	});
+
 	$.fn.teamCityBuildStatus = function(options){
 		return this.each(function(){
 			new TeamCityBuildStatus(this, options);
@@ -75,7 +102,7 @@
 
 		function init(){
 			buildStageRepository.getAll(function(buildStages){
-				buildStageDisplay.show(buildStages[0]);
+				buildStages.forEach(buildStageDisplay.show);
 			});
 		}
 		init();
@@ -104,10 +131,7 @@
 					accept : 'application/json'
 				}, 
 				success : function(result){
-					callback([{
-						id : result.buildTypes[0].id,
-						name: result.buildTypes[0].name
-					}]);
+					callback(result.buildTypes);
 				}
 			});
 		};
