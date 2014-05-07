@@ -1,6 +1,9 @@
 {
 	"name": "teamcity-build-status.js",
 	"version": "1.0.0",
+	"dependencies" : {
+		"jQuery" : "1.11.1" 
+	},
 	"devDependencies": {
 		"qunit": "*"
 	}
