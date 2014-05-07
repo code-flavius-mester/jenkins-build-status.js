@@ -15,6 +15,18 @@
 		equal(requests[0].uri, teamcityUrl + '/guestAuth/app/rest/projects/id:' + projectId);
 	});
 
+	test('Requests build stages in JSON', function(){
+		var requests = [];
+		$.ajax = function(options){
+			requests.push(options);
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : 'projectId'
+		});
+		equal(requests[0].headers.accept, 'application/json');
+	});
+
 	$.fn.teamCityBuildStatus = function(options){
 		return this.each(function(){
 			new TeamCityBuildStatus(options);
@@ -26,7 +38,10 @@
 
 		function init(){
 			$.ajax({
-				uri : options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId
+				uri : options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId,
+				headers : {
+					accept : 'application/json'
+				}
 			});
 		}
 
