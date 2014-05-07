@@ -1,26 +1,30 @@
 (function($){
 	test('Requests build stages for project', function(done){
 		var projectId = Math.random(),
+			teamcityUrl = 'http://teamcity.dev' + Math.random(),
 			requests = [];
 		$.ajax = function(options){
 			requests.push(options);
 		};
 		$('#display').teamCityBuildStatus({
+			teamcityUrl : teamcityUrl,
 			projectId : projectId
 		});
-		equal(requests[0].uri, 'http://teamcity.dev/guestAuth/app/rest/projects/id:' + projectId);
+		equal(requests[0].uri, teamcityUrl + '/guestAuth/app/rest/projects/id:' + projectId);
 	});
 
 	$.fn.teamCityBuildStatus = function(options){
 		return this.each(function(){
-			new TeamCityBuildStatus(options.projectId);
+			new TeamCityBuildStatus(options);
 		});
 	};
 
-	var TeamCityBuildStatus = function(projectId){
+	var TeamCityBuildStatus = function(options){
+		var GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
+
 		function init(){
 			$.ajax({
-				uri : 'http://teamcity.dev/guestAuth/app/rest/projects/id:' + projectId
+				uri : options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId
 			});
 		}
 
