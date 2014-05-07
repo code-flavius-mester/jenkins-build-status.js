@@ -53,24 +53,28 @@
 	};
 
 	var TeamCityBuildStatus = function(element, options){
-		var buildStageRepository = new BuildStageRepository(options);
+		var projectElement = $('<div>').addClass('project').appendTo(element),
+			buildStageRepository = new BuildStageRepository(options),
+			buildStageDisplay = new BuildStageDisplay(projectElement);
 
 		function init(){
-			var project = $('<div>')
-				.addClass('project')
-				.appendTo(element);
 			buildStageRepository.getAll(function(buildStages){
-				var nameElement = $('<span>')
-					.addClass('name')
-					.text(buildStages[0].name);
-				$('<div>')
-					.addClass('build-stage')
-					.append(nameElement)
-					.appendTo(project);
+				buildStageDisplay.show(buildStages[0]);
 			});
 		}
-
 		init();
+	};
+
+	var BuildStageDisplay = function(projectElement){
+		this.show = function(buildStage){
+			var nameElement = $('<span>')
+					.addClass('name')
+					.text(buildStage.name);
+			$('<div>')
+				.addClass('build-stage')
+				.append(nameElement)
+				.appendTo(projectElement);
+		}
 	};
 
 	var BuildStageRepository = function(options){
