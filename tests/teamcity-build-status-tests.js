@@ -1,4 +1,6 @@
 (function($){
+	var DISPLAY_AREA_DIV_ID = '#display';
+
 	test('Requests build stages for project', function(done){
 		var projectId = Math.random(),
 			teamcityUrl = 'http://teamcity.dev' + Math.random(),
@@ -6,7 +8,7 @@
 		$.ajax = function(options){
 			requests.push(options);
 		};
-		$('#display').teamCityBuildStatus({
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
 			teamcityUrl : teamcityUrl,
 			projectId : projectId
 		});
