@@ -27,18 +27,47 @@
 		equal(requests[0].headers.accept, 'application/json');
 	});
 
+	test('Displays build stage of project that contains one build stage', function(){
+		var buildStageName = 'a stage ' + Math.random();
+		$.ajax = function(options){
+			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : [
+						{ name : buildStageName }
+					]
+				});
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : 'projectId'
+		});
+		var displayedBuildStageName = $(DISPLAY_AREA_DIV_ID).find('.project .build-stage .name').text();
+		equal(displayedBuildStageName, buildStageName);
+	});
+
 	$.fn.teamCityBuildStatus = function(options){
 		return this.each(function(){
-			new TeamCityBuildStatus(options);
+			new TeamCityBuildStatus(this, options);
 		});
 	};
 
-	var TeamCityBuildStatus = function(options){
-		var buildStageRepository = new BuildStageRepository(options),
-			GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
+	var TeamCityBuildStatus = function(element, options){
+		var buildStageRepository = new BuildStageRepository(options);
 
 		function init(){
-			buildStageRepository.getAll();
+			var project = $('<div>')
+				.addClass('project')
+				.appendTo(element);
+			buildStageRepository.getAll(function(buildStages){
+				var nameElement = $('<span>')
+					.addClass('name')
+					.text(buildStages[0].name);
+				$('<div>')
+					.addClass('build-stage')
+					.append(nameElement)
+					.appendTo(project);
+			});
 		}
 
 		init();
@@ -47,11 +76,16 @@
 	var BuildStageRepository = function(options){
 		var GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
 
-		this.getAll = function(){
+		this.getAll = function(callback){
 			$.ajax({
 				uri : options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId,
 				headers : {
 					accept : 'application/json'
+				}, 
+				success : function(result){
+					callback([{
+						name: result.buildTypes[0].name
+					}]);
 				}
 			});
 		};
