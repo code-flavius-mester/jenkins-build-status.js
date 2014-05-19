@@ -261,6 +261,35 @@
 		equal(hasPassed, false);
 	});
 
+	test('Display of no builds show nothing', function(){
+		var buildStageId = 'bt12';
+		$.ajax = function(options){
+			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : [
+						{ 
+							id : buildStageId,
+							name : 'name'
+						}
+					]
+				});
+			}
+			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				options.success({
+					build : []
+				});
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : 'projectId'
+		});
+		var hasPassed = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage').hasClass('success');
+		equal(hasPassed, false);
+		var hasFailed = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage').hasClass('failed');
+		equal(hasFailed, false);
+	});
+
 
 	$.fn.teamCityBuildStatus = function(options){
 		return this.each(function(){
@@ -335,8 +364,13 @@
 					accept : 'application/json'
 				},
 				success : function(statusResults){
-					var buildStatus = statusResults.build[0].status;
-					buildStageElement.addClass(statusClasses[buildStatus]);
+					if (statusResults.build.length > 0){
+						var buildStatus = statusResults.build[0].status;
+						buildStageElement
+							.removeClass('success')
+							.removeClass('failed')
+							.addClass(statusClasses[buildStatus]);
+					}
 				}
 			});
 		};
