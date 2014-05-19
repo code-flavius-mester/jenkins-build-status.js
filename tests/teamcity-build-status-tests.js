@@ -155,18 +155,14 @@
 	var TeamCityBuildStatus = function(element, options){
 		var projectElement = $('<div>').attr('id', options.projectId).addClass('project').appendTo(element),
 			buildStageRepository = new BuildStageRepository(options),
-			buildStageDisplay = new BuildStageDisplay(projectElement);
+			buildStageDisplay = new BuildStageDisplay(projectElement),
+			buildStageFactory = new BuildStageFactory(options);
 
 		function init(){
 			buildStageRepository.getAll(function(buildStages){
 				buildStages.forEach(buildStageDisplay.show);
 				buildStages.forEach(function(buildStage){
-					$.ajax({
-						uri : options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStage.id+'),lookupLimit:2,running:any',
-						headers : {
-							accept : 'application/json'
-						}
-					});
+					buildStageFactory.create(buildStage.id);	
 				});
 			});
 		}
@@ -201,5 +197,29 @@
 				}
 			});
 		};
+	};
+
+	var BuildStageFactory = function(options){
+		this.create = function(buildStageId){
+			return new BuildStage({
+				teamcityUrl : options.teamcityUrl,
+				buildStageId : buildStageId
+			})
+		};
+	};
+
+	var BuildStage = function(options){
+		var buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:' + options.buildStageId + '),lookupLimit:2,running:any';
+
+		this.check = function(){
+			$.ajax({
+				uri : buildStageStatusUrl,
+				headers : {
+					accept : 'application/json'
+				}
+			});
+		};
+
+		this.check();
 	};
 })(jQuery, undefined);
