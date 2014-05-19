@@ -311,7 +311,11 @@
 
 	var BuildStage = function(options){
 		var buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:' + options.id + '),lookupLimit:2,running:any',
-			buildStageElement;
+			buildStageElement,
+			statusClasses = {
+				'FAILURE' : 'failed',
+				'SUCCESS' : 'success'
+			};
 
 		function show(){
 			var nameElement = $('<span>')
@@ -331,12 +335,8 @@
 					accept : 'application/json'
 				},
 				success : function(statusResults){
-					if (statusResults.build[0].status === 'FAILURE'){
-						buildStageElement.addClass('failed');
-					}
-					if (statusResults.build[0].status == "SUCCESS"){
-						buildStageElement.addClass('success');
-					}
+					var buildStatus = statusResults.build[0].status;
+					buildStageElement.addClass(statusClasses[buildStatus]);
 				}
 			});
 		};
