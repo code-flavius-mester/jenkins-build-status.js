@@ -145,6 +145,35 @@
 		equal(buildStageStatusRequests[1], teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[1].id+'),lookupLimit:2,running:any');
 	});
 
+	test('Display shows failing build stage', function(){
+		var buildStageId = 'bt12';
+		$.ajax = function(options){
+			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : [
+						{ 
+							id : buildStageId,
+							name : 'name'
+						}
+					]
+				});
+			}
+			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				options.success({
+					build : [
+						{status : 'FAILURE'}
+					]
+				});
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : 'projectId'
+		});
+		var hasFailed = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage').hasClass('failed');
+		ok(hasFailed);
+	});
+
 
 	$.fn.teamCityBuildStatus = function(options){
 		return this.each(function(){
@@ -216,6 +245,9 @@
 				uri : buildStageStatusUrl,
 				headers : {
 					accept : 'application/json'
+				},
+				success : function(){
+					$('#' + options.buildStageId).addClass('failed');
 				}
 			});
 		};
