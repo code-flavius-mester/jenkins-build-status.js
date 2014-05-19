@@ -89,6 +89,35 @@
 		equal(displayedBuildStageName, buildStageName);
 	});
 
+	test('Retrieves status of build stage', function(){
+		var buildStageName = 'a stage ' + Math.random(),
+			buildStageId = 'bt309',
+			buildStageStatus,
+			teamcityUrl = 'teamcityUrl';
+		$.ajax = function(options){
+			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : [
+						{ 
+							id : buildStageId,
+							name : buildStageName
+						}
+					]
+				});
+			}
+			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				buildStageStatus = options.uri;
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : teamcityUrl,
+			projectId : 'projectId'
+		});
+		equal(buildStageStatus, teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStageId+'),lookupLimit:2,running:any');
+	});
+
+
+
 	$.fn.teamCityBuildStatus = function(options){
 		return this.each(function(){
 			new TeamCityBuildStatus(this, options);
@@ -103,8 +132,12 @@
 		function init(){
 			buildStageRepository.getAll(function(buildStages){
 				buildStages.forEach(buildStageDisplay.show);
+				$.ajax({
+					uri : options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[0].id+'),lookupLimit:2,running:any'
+				});
 			});
 		}
+
 		init();
 	};
 
