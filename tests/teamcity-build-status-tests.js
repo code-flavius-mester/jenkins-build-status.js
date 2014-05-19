@@ -184,32 +184,15 @@
 	var TeamCityBuildStatus = function(element, options){
 		var projectElement = $('<div>').attr('id', options.projectId).addClass('project').appendTo(element),
 			buildStageRepository = new BuildStageRepository(options),
-			buildStageDisplay = new BuildStageDisplay(projectElement),
-			buildStageFactory = new BuildStageFactory(options);
+			buildStageFactory = new BuildStageFactory(projectElement, options);
 
 		function init(){
 			buildStageRepository.getAll(function(buildStages){
-				buildStages.forEach(buildStageDisplay.show);
-				buildStages.forEach(function(buildStage){
-					buildStageFactory.create(buildStage.id);	
-				});
+				buildStages.forEach(buildStageFactory.create);	
 			});
 		}
 
 		init();
-	};
-
-	var BuildStageDisplay = function(projectElement){
-		this.show = function(buildStage){
-			var nameElement = $('<span>')
-					.addClass('name')
-					.text(buildStage.name);
-			$('<div>')
-				.attr('id', buildStage.id)
-				.addClass('build-stage')
-				.append(nameElement)
-				.appendTo(projectElement);
-		}
 	};
 
 	var BuildStageRepository = function(options){
@@ -228,30 +211,45 @@
 		};
 	};
 
-	var BuildStageFactory = function(options){
-		this.create = function(buildStageId){
+	var BuildStageFactory = function(projectElement, options){
+		this.create = function(buildStage){
 			return new BuildStage({
+				projectElement : projectElement,
 				teamcityUrl : options.teamcityUrl,
-				buildStageId : buildStageId
+				id : buildStage.id,
+				name : buildStage.name
 			})
 		};
 	};
 
 	var BuildStage = function(options){
-		var buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:' + options.buildStageId + '),lookupLimit:2,running:any';
+		var buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:' + options.id + '),lookupLimit:2,running:any',
+			buildStageElement;
 
-		this.check = function(){
+		function show(){
+			var nameElement = $('<span>')
+					.addClass('name')
+					.text(options.name);
+			buildStageElement = $('<div>')
+				.attr('id', options.id)
+				.addClass('build-stage')
+				.append(nameElement)
+				.appendTo(options.projectElement);
+		}
+
+		function checkStatus(){
 			$.ajax({
 				uri : buildStageStatusUrl,
 				headers : {
 					accept : 'application/json'
 				},
 				success : function(){
-					$('#' + options.buildStageId).addClass('failed');
+					buildStageElement.addClass('failed');
 				}
 			});
 		};
 
-		this.check();
+		show();
+		checkStatus();
 	};
 })(jQuery, undefined);
