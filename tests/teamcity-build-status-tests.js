@@ -116,6 +116,37 @@
 		equal(buildStageStatus, teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStageId+'),lookupLimit:2,running:any');
 	});
 
+	test('Retrieves status of two build stage', function(){
+		var buildStageStatus,
+			teamcityUrl = 'teamcityUrl',
+			buildStageStatusRequests = [],
+			buildStages = [
+				{ 
+					id : 'bt1',
+					name : 'aBuildStage1'
+				},
+				{ 
+					id : 'bt2',
+					name : 'aBuildStage2'
+				}
+			];
+		$.ajax = function(options){
+			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : buildStages
+				});
+			}
+			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				buildStageStatusRequests.push(options.uri);
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : teamcityUrl,
+			projectId : 'projectId'
+		});
+		equal(buildStageStatusRequests[0], teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[0].id+'),lookupLimit:2,running:any');
+		equal(buildStageStatusRequests[1], teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[1].id+'),lookupLimit:2,running:any');
+	});
 
 
 	$.fn.teamCityBuildStatus = function(options){
@@ -132,8 +163,10 @@
 		function init(){
 			buildStageRepository.getAll(function(buildStages){
 				buildStages.forEach(buildStageDisplay.show);
-				$.ajax({
-					uri : options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[0].id+'),lookupLimit:2,running:any'
+				buildStages.forEach(function(buildStage){
+					$.ajax({
+						uri : options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStage.id+'),lookupLimit:2,running:any'
+					});
 				});
 			});
 		}
