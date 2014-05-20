@@ -24,8 +24,9 @@
 		var GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
 
 		this.getAll = function(callback){
+			var uri = options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId;
 			$.ajax({
-				uri : options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId,
+				uri : uri,
 				headers : {
 					accept : 'application/json'
 				}, 

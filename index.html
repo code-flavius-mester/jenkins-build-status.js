@@ -1,19 +1,48 @@
 <html>
 	<head>
 		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="src/teamcity-build-status.js"></script>
 	</head>
 	<body>
-	<img src="http://teamcity.dev/guestAuth/app/rest/builds/buildType:(id:bt389)/statusIcon"/>
+	<!-- <img src="http://teamcity.dev/guestAuth/app/rest/builds/buildType:(id:bt389)/statusIcon"/> -->
 
+	<div id="buildStatus">
+	</div>
 	<script>
+		// $.ajax({
+		// 	url: 'http://teamcity.dev/guestAuth/app/rest/builds?locator=buildType:(id:bt439),lookupLimit:2,running:any',
+		// 	headers : {
+		// 		accept: 'application/json',
+		// 	},
+		// 	success : function(data){
+		// 		console.log(data);
+		// 	}
+		// });
+
 		$.ajax({
-			url: 'http://teamcity.dev/guestAuth/app/rest/builds?locator=buildType:(id:bt439),lookupLimit:2,running:any',
+			url: 'http://teamcity.dev/guestAuth/app/rest/projects/id:project90',
 			headers : {
 				accept: 'application/json',
 			},
 			success : function(data){
 				console.log(data);
 			}
+		});
+
+		var uri = 'http://teamcity.dev/guestAuth/app/rest/projects/id:project90';
+			$.ajax({
+				uri : 'http://teamcity.dev/guestAuth/app/rest/projects/id:project90',
+				headers : {
+					accept : 'application/json'
+				}, 
+				success : function(result){
+					console.log(result);
+				}
+			});
+
+		$('#buildStatus').teamCityBuildStatus({
+			teamcityUrl : 'http://teamcity.dev',
+			projectId : 'project90'
 		});
 	</script>
 	</body>
