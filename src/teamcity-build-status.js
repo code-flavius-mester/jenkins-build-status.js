@@ -7,16 +7,23 @@
 	};
 
 	var TeamCityBuildStatus = function(element, options){
-		var PROJECT_CLASS = 'project',
-			projectElement = createElement(),
+		var projectBuild = new ProjectBuild(element, options),
 			buildStageRepository = new BuildStageRepository(options),
-			buildStageFactory = new BuildStageFactory(projectElement, this, options);
+			buildStageFactory = new BuildStageFactory(projectBuild, options);
 
 		function init(){
 			buildStageRepository.getAll(function(buildStages){
 				buildStages.forEach(buildStageFactory.create);	
 			});
 		}
+
+		init();
+	};
+
+	var ProjectBuild = function(element, options){
+		var PROJECT_CLASS = 'project',
+			projectElement = createElement(),
+			failedBuilds = [];
 
 		function createElement(){
 			return $('<div>')
@@ -26,13 +33,30 @@
 				.appendTo(element)
 		}
 
-		this.showFailure = function(){
+		this.hasFailed = function(buildStageId){
 			projectElement
 				.prop('class', PROJECT_CLASS)
 				.addClass('failed');
-		}
+			if (failedBuilds.indexOf(buildStageId) === -1){
+				failedBuilds.push(buildStageId);
+			}
+		};
 
-		init();
+		this.hasPassed = function(buildStageId){
+			var index = failedBuilds.indexOf(buildStageId);
+			if (index !== -1){
+				failedBuilds.splice(index, 1);
+				if (failedBuilds.length === 0){
+					projectElement
+						.prop('class', PROJECT_CLASS)
+						.addClass('success');
+				}
+			}
+		};
+
+		this.showBuild = function(buildElement){
+			projectElement.append(buildElement);
+		};
 	};
 
 	var BuildStageRepository = function(options){
@@ -51,13 +75,13 @@
 		};
 	};
 
-	var BuildStageFactory = function(projectElement, projectDisplay, options){
+	var BuildStageFactory = function(projectDisplay, options){
 		this.create = function(buildStage){
 			return new BuildStage(projectDisplay, {
-				projectElement : projectElement,
 				teamcityUrl : options.teamcityUrl,
 				id : buildStage.id,
-				name : buildStage.name
+				name : buildStage.name,
+				refreshTimeout : options.refreshTimeout
 			})
 		};
 	};
@@ -71,6 +95,14 @@
 				'SUCCESS' : 'success'
 			};
 
+		function init(){
+			show();
+			checkStatus();
+			if (!!options.refreshTimeout){
+				setTimeout(checkStatus, options.refreshTimeout);	
+			}
+		}
+
 		function show(){
 			var nameElement = $('<span>')
 					.addClass('name')
@@ -78,8 +110,8 @@
 			buildStageElement = $('<div>')
 				.attr('id', options.id)
 				.addClass(BUILD_STAGE_CLASS)
-				.append(nameElement)
-				.appendTo(options.projectElement);
+				.append(nameElement);
+			projectDisplay.showBuild(buildStageElement);
 		}
 
 		function checkStatus(){
@@ -101,12 +133,15 @@
 				.prop('class', BUILD_STAGE_CLASS)
 				.addClass(statusClasses[buildStatus.status])
 				.toggleClass('running', !!buildStatus.running);
+			
 			if (buildStatus.status === 'FAILURE'){
-				projectDisplay.showFailure();
+				projectDisplay.hasFailed(options.id);
+			}
+			else {
+				projectDisplay.hasPassed(options.id);
 			}
 		}
 
-		show();
-		checkStatus();
+		init();
 	};
 })(jQuery);

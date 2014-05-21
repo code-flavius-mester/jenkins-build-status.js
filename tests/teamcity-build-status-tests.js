@@ -405,6 +405,38 @@
 		ok(hasFailed);
 	});
 
+	test('Display of failed build hides project success', function(){
+		var buildStageId = 'bt12',
+			projectId = 'bob1';
+		$.ajax = function(options){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
+				});
+			}
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				options.success({
+					build : [
+						{status : 'FAILURE'}
+					]
+				});
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : projectId
+		});
+		var hasPassed = $(DISPLAY_AREA_DIV_ID).find('#' + projectId).hasClass('success');
+		equal(hasPassed, false);
+	});
+
 	test('As default displays project build success', function(done){
 		var projectId = 'project90',
 			requests = [];
@@ -416,5 +448,43 @@
 		});
 		var hasPassed = $(DISPLAY_AREA_DIV_ID).find('#' + projectId).hasClass('success');
 		ok(hasPassed);
+	});
+
+	asyncTest('Display of failed build followed by success shows project success', function(){
+		var buildStageId = 'bt12',
+			projectId = 'bob1',
+			completedFirstBuildTest = false;
+		$.ajax = function(options){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
+				});
+			}
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				options.success({
+					build : [
+						{status : completedFirstBuildTest ? 'SUCCESS' : 'FAILURE'}
+					]
+				});
+				completedFirstBuildTest = true;
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : projectId,
+			refreshTimeout : 200
+		});
+		setTimeout(function(){
+			var hasPassed = $(DISPLAY_AREA_DIV_ID).find('#' + projectId).hasClass('success');
+			ok(hasPassed);
+			start();
+		}, 1000);
 	});
 })(jQuery, undefined);
