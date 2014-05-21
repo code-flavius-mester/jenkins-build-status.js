@@ -4,6 +4,13 @@
 	"dependencies" : {
 		"jQuery" : "1.11.1" 
 	},
+	"ignore": [
+    	"node_modules",
+    	"tests",
+    	"gulpfile.js",
+    	"package.json",
+    	".gitignore"
+  	],
 	"devDependencies": {
 		"qunit": "*"
 	}
