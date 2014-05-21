@@ -372,4 +372,36 @@
 		var isRunning = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage').hasClass('running');
 		equal(isRunning, false);
 	});
+
+	test('Display of failed build shows project failure', function(){
+		var buildStageId = 'bt12',
+			projectId = 'bob1';
+		$.ajax = function(options){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
+				});
+			}
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				options.success({
+					build : [
+						{status : 'FAILURE'}
+					]
+				});
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : projectId
+		});
+		var hasFailed = $(DISPLAY_AREA_DIV_ID).find('#' + projectId).hasClass('failed');
+		ok(hasFailed);
+	});
 })(jQuery, undefined);

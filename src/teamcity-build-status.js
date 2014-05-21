@@ -7,14 +7,21 @@
 	};
 
 	var TeamCityBuildStatus = function(element, options){
-		var projectElement = $('<div>').attr('id', options.projectId).addClass('project').appendTo(element),
+		var PROJECT_CLASS = 'project',
+			projectElement = $('<div>').attr('id', options.projectId).addClass(PROJECT_CLASS).appendTo(element),
 			buildStageRepository = new BuildStageRepository(options),
-			buildStageFactory = new BuildStageFactory(projectElement, options);
+			buildStageFactory = new BuildStageFactory(projectElement, this, options);
 
 		function init(){
 			buildStageRepository.getAll(function(buildStages){
 				buildStages.forEach(buildStageFactory.create);	
 			});
+		}
+
+		this.showFailure = function(){
+			projectElement
+				.prop('class', PROJECT_CLASS)
+				.addClass('failed');
 		}
 
 		init();
@@ -36,9 +43,9 @@
 		};
 	};
 
-	var BuildStageFactory = function(projectElement, options){
+	var BuildStageFactory = function(projectElement, projectDisplay, options){
 		this.create = function(buildStage){
-			return new BuildStage({
+			return new BuildStage(projectDisplay, {
 				projectElement : projectElement,
 				teamcityUrl : options.teamcityUrl,
 				id : buildStage.id,
@@ -47,7 +54,7 @@
 		};
 	};
 
-	var BuildStage = function(options){
+	var BuildStage = function(projectDisplay, options){
 		var BUILD_STAGE_CLASS = 'build-stage',
 			buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:' + options.id + '),lookupLimit:10,running:any',
 			buildStageElement,
@@ -86,6 +93,9 @@
 				.prop('class', BUILD_STAGE_CLASS)
 				.addClass(statusClasses[buildStatus.status])
 				.toggleClass('running', !!buildStatus.running);
+			if (buildStatus.status === 'FAILURE'){
+				projectDisplay.showFailure();
+			}
 		}
 
 		show();
