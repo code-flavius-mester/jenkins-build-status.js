@@ -8,7 +8,7 @@
 
 	var TeamCityBuildStatus = function(element, options){
 		var PROJECT_CLASS = 'project',
-			projectElement = $('<div>').attr('id', options.projectId).addClass(PROJECT_CLASS).appendTo(element),
+			projectElement = createElement(),
 			buildStageRepository = new BuildStageRepository(options),
 			buildStageFactory = new BuildStageFactory(projectElement, this, options);
 
@@ -16,6 +16,14 @@
 			buildStageRepository.getAll(function(buildStages){
 				buildStages.forEach(buildStageFactory.create);	
 			});
+		}
+
+		function createElement(){
+			return $('<div>')
+				.attr('id', options.projectId)
+				.addClass(PROJECT_CLASS)
+				.addClass('success')
+				.appendTo(element)
 		}
 
 		this.showFailure = function(){

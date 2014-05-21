@@ -404,4 +404,17 @@
 		var hasFailed = $(DISPLAY_AREA_DIV_ID).find('#' + projectId).hasClass('failed');
 		ok(hasFailed);
 	});
+
+	test('As default displays project build success', function(done){
+		var projectId = 'project90',
+			requests = [];
+		$.ajax = function(options){
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : projectId
+		});
+		var hasPassed = $(DISPLAY_AREA_DIV_ID).find('#' + projectId).hasClass('success');
+		ok(hasPassed);
+	});
 })(jQuery, undefined);
