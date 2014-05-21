@@ -48,7 +48,8 @@
 	};
 
 	var BuildStage = function(options){
-		var buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:' + options.id + '),lookupLimit:2,running:any',
+		var BUILD_STAGE_CLASS = 'build-stage',
+			buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:' + options.id + '),lookupLimit:10,running:any',
 			buildStageElement,
 			statusClasses = {
 				'FAILURE' : 'failed',
@@ -61,7 +62,7 @@
 					.text(options.name);
 			buildStageElement = $('<div>')
 				.attr('id', options.id)
-				.addClass('build-stage')
+				.addClass(BUILD_STAGE_CLASS)
 				.append(nameElement)
 				.appendTo(options.projectElement);
 		}
@@ -74,15 +75,18 @@
 				},
 				success : function(statusResults){
 					if (statusResults.build.length > 0){
-						var buildStatus = statusResults.build[0].status;
-						buildStageElement
-							.removeClass('success')
-							.removeClass('failed')
-							.addClass(statusClasses[buildStatus]);
+						updateStatus(statusResults.build[0]);
 					}
 				}
 			});
 		};
+
+		function updateStatus(buildStatus){
+			buildStageElement
+				.prop('class', BUILD_STAGE_CLASS)
+				.addClass(statusClasses[buildStatus.status])
+				.toggleClass('running', !!buildStatus.running);
+		}
 
 		show();
 		checkStatus();

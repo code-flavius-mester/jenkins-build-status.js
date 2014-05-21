@@ -149,8 +149,8 @@
 			teamcityUrl : teamcityUrl,
 			projectId : 'projectId'
 		});
-		equal(buildStageStatusRequests[0], teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[0].id+'),lookupLimit:2,running:any');
-		equal(buildStageStatusRequests[1], teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[1].id+'),lookupLimit:2,running:any');
+		equal(buildStageStatusRequests[0], teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[0].id+'),lookupLimit:10,running:any');
+		equal(buildStageStatusRequests[1], teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+buildStages[1].id+'),lookupLimit:10,running:any');
 	});
 
 	test('Display shows failing build stage', function(){
@@ -306,5 +306,70 @@
 		equal(hasPassed, false);
 		var hasFailed = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage').hasClass('failed');
 		equal(hasFailed, false);
+	});
+
+	test('Display of running build indicates it is currently running', function(){
+		var buildStageId = 'bt12';
+		$.ajax = function(options){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
+				});
+			}
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				options.success({
+					build : [
+						{
+							running : true
+						}
+					]
+				});
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : 'projectId'
+		});
+		var isRunning = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage').hasClass('running');
+		ok(isRunning);
+	});
+
+	test('Display of non-running build does not indicate it is currently running', function(){
+		var buildStageId = 'bt12';
+		$.ajax = function(options){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+				options.success({
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
+				});
+			}
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				options.success({
+					build : [
+						{
+						}
+					]
+				});
+			}
+		};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : 'teamcityUrl',
+			projectId : 'projectId'
+		});
+		var isRunning = $(DISPLAY_AREA_DIV_ID).find('.project #'+buildStageId+'.build-stage').hasClass('running');
+		equal(isRunning, false);
 	});
 })(jQuery, undefined);
