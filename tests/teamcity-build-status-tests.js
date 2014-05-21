@@ -12,7 +12,7 @@
 			teamcityUrl : teamcityUrl,
 			projectId : projectId
 		});
-		equal(requests[0].uri, teamcityUrl + '/guestAuth/app/rest/projects/id:' + projectId);
+		equal(requests[0].url, teamcityUrl + '/guestAuth/app/rest/projects/id:' + projectId);
 	});
 
 	test('Adds project id as id of project element', function(done){
@@ -43,14 +43,16 @@
 		var buildStageName = 'a stage ' + Math.random(),
 			buildStageId = 'bt309';
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : [
-						{ 
-							id : buildStageId,
-							name : buildStageName
-						}
-					]
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : buildStageName
+							}
+						]
+					}
 				});
 			}
 		};
@@ -66,18 +68,20 @@
 		var buildStageName = 'a stage ' + Math.random(),
 			buildStageId = 'bt309';
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : [
-						{
-							id : 'anId',
-							name : 'name'
-						},
-						{ 
-							id : buildStageId,
-							name : buildStageName
-						}
-					]
+					buildTypes : {
+						buildType : [
+							{
+								id : 'anId',
+								name : 'name'
+							},
+							{ 
+								id : buildStageId,
+								name : buildStageName
+							}
+						]
+					}
 				});
 			}
 		};
@@ -92,17 +96,19 @@
 	test('Retrieves status of build stage in JSON', function(){
 		var buildStageStatusOptions;
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : [
-						{ 
-							id : '12',
-							name : 'name'
-						}
-					]
+					buildTypes : {
+						buildType : [
+							{ 
+								id : '12',
+								name : 'name'
+							}
+						]
+					}
 				});
 			}
-			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
 				buildStageStatusOptions = options;
 			}
 		};
@@ -128,13 +134,15 @@
 				}
 			];
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : buildStages
+					buildTypes : {
+						buildType : buildStages
+					}
 				});
 			}
-			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
-				buildStageStatusRequests.push(options.uri);
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+				buildStageStatusRequests.push(options.url);
 			}
 		};
 		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
@@ -148,17 +156,19 @@
 	test('Display shows failing build stage', function(){
 		var buildStageId = 'bt12';
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : [
-						{ 
-							id : buildStageId,
-							name : 'name'
-						}
-					]
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
 				});
 			}
-			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
 				options.success({
 					build : [
 						{status : 'FAILURE'}
@@ -177,17 +187,19 @@
 	test('Display of passing build does not show failure', function(){
 		var buildStageId = 'bt12';
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : [
-						{ 
-							id : buildStageId,
-							name : 'name'
-						}
-					]
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
 				});
 			}
-			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
 				options.success({
 					build : [
 						{status : 'SUCCESS'}
@@ -206,17 +218,19 @@
 	test('Display of passing build shows success', function(){
 		var buildStageId = 'bt12';
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : [
-						{ 
-							id : buildStageId,
-							name : 'name'
-						}
-					]
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
 				});
 			}
-			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
 				options.success({
 					build : [
 						{status : 'SUCCESS'}
@@ -235,17 +249,19 @@
 	test('Display of failed build does not show success', function(){
 		var buildStageId = 'bt12';
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : [
-						{ 
-							id : buildStageId,
-							name : 'name'
-						}
-					]
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
 				});
 			}
-			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
 				options.success({
 					build : [
 						{status : 'FAILURE'}
@@ -264,17 +280,19 @@
 	test('Display of no builds show nothing', function(){
 		var buildStageId = 'bt12';
 		$.ajax = function(options){
-			if (options.uri.indexOf('/guestAuth/app/rest/projects/id:') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/projects/id:') > 0){
 				options.success({
-					buildTypes : [
-						{ 
-							id : buildStageId,
-							name : 'name'
-						}
-					]
+					buildTypes : {
+						buildType : [
+							{ 
+								id : buildStageId,
+								name : 'name'
+							}
+						]
+					}
 				});
 			}
-			if (options.uri.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
 				options.success({
 					build : []
 				});

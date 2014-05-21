@@ -19,26 +19,16 @@
 		// 	}
 		// });
 
-		$.ajax({
-			url: 'http://teamcity.dev/guestAuth/app/rest/projects/id:project90',
-			headers : {
-				accept: 'application/json',
-			},
-			success : function(data){
-				console.log(data);
-			}
-		});
+		// $.ajax({
+		// 	url: 'http://teamcity.dev/guestAuth/app/rest/projects/id:project90',
+		// 	headers : {
+		// 		accept: 'application/json',
+		// 	},
+		// 	success : function(data){
+		// 		console.log(data);
+		// 	}
+		// });
 
-		var uri = 'http://teamcity.dev/guestAuth/app/rest/projects/id:project90';
-			$.ajax({
-				uri : 'http://teamcity.dev/guestAuth/app/rest/projects/id:project90',
-				headers : {
-					accept : 'application/json'
-				}, 
-				success : function(result){
-					console.log(result);
-				}
-			});
 
 		$('#buildStatus').teamCityBuildStatus({
 			teamcityUrl : 'http://teamcity.dev',

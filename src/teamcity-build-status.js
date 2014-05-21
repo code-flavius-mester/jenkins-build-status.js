@@ -24,14 +24,13 @@
 		var GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
 
 		this.getAll = function(callback){
-			var uri = options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId;
 			$.ajax({
-				uri : uri,
+				url : options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId,
 				headers : {
 					accept : 'application/json'
 				}, 
 				success : function(result){
-					callback(result.buildTypes);
+					callback(result.buildTypes.buildType);
 				}
 			});
 		};
@@ -69,7 +68,7 @@
 
 		function checkStatus(){
 			$.ajax({
-				uri : buildStageStatusUrl,
+				url : buildStageStatusUrl,
 				headers : {
 					accept : 'application/json'
 				},
