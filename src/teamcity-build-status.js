@@ -99,7 +99,7 @@
 			show();
 			checkStatus();
 			if (!!options.refreshTimeout){
-				setTimeout(checkStatus, options.refreshTimeout);	
+				setInterval(checkStatus, options.refreshTimeout);	
 			}
 		}
 
