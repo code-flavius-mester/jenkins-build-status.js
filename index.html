@@ -2,6 +2,7 @@
 	<head>
 		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 		<script src="src/teamcity-build-status.js"></script>
+		<link rel="stylesheet" href="src/teamcity-build-status.css">
 	</head>
 	<body>
 	<!-- <img src="http://teamcity.dev/guestAuth/app/rest/builds/buildType:(id:bt389)/statusIcon"/> -->
@@ -28,7 +29,7 @@
 		// 		console.log(data);
 		// 	}
 		// });
-
+		
 
 		$('#buildStatus').teamCityBuildStatus({
 			teamcityUrl : 'http://teamcity.dev',

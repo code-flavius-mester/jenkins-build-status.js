@@ -29,4 +29,4 @@ The following classes are added to the display:
 **.success** - project/build-stage is passing  
 **.running** - build-stage is currently running
 
-No styling is performed by this plugin
+There is an example style sheet in the src directory

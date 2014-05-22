@@ -1,0 +1,32 @@
+body {
+	font-family: Helvetica, Arial, sans-serif
+}
+
+.project, .build-stage {
+	border: 1px black solid;
+	padding: 10px;
+}
+
+.build-stage {
+	margin: 3px 0px;
+}
+
+.build-stage span {
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: 5px 0;
+	font-weight: bold;
+}
+
+.success {
+	background-color: #3CF00A;
+}
+
+.failed {
+	background-color: #F00A30;
+}
+
+.running {
+	background-color: #E4F00A;
+}
