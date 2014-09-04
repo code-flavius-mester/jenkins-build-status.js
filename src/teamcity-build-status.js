@@ -26,10 +26,14 @@
 			failedBuilds = [];
 
 		function createElement(){
+			var title = $('<div>')
+				.addClass('title')
+				.text(options.projectName);
 			return $('<div>')
 				.attr('id', options.projectId)
 				.addClass(PROJECT_CLASS)
 				.addClass('success')
+				.append(title)
 				.appendTo(element)
 		}
 

@@ -1,6 +1,18 @@
 (function($){
 	var DISPLAY_AREA_DIV_ID = '#display';
 
+	test('Displays project name in title', function(done){
+		var projectName = 'name'+Math.random(),
+			teamcityUrl = 'http://teamcity.dev' + Math.random(),
+			requests = [];
+		$.ajax = function(options){};
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			projectName : projectName
+		});
+		var title = $(DISPLAY_AREA_DIV_ID).find('div.title');
+		equal(title.text(), projectName);
+	});
+
 	test('Requests build stages for project', function(done){
 		var projectId = Math.random(),
 			teamcityUrl = 'http://teamcity.dev' + Math.random(),
