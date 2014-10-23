@@ -6,14 +6,6 @@ var gulp = require('gulp'),
 	qunit = require('gulp-qunit'),
 	terminal = require('child_process').exec;
 
-gulp.task('dependencies', function(callback){
-	terminal('node_modules/bower/bin/bower install', function (err, stdout, stderr) {
-    	console.log(stdout);
-    	console.log(stderr);
-    	callback(err);
-  	});
-});
-
 gulp.task('jshint', function(){
 	return gulp
 		.src(['src/pageboy.js', 'tests/**/*.js'])
