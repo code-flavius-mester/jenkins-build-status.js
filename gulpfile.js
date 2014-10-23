@@ -21,7 +21,7 @@ gulp.task('jshint', function(){
 		.pipe(jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('test', ['dependencies'], function () {
+gulp.task('test', function () {
 	return gulp.src('./tests/**/*.html')
         .pipe(qunit());
 });
