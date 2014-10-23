@@ -85,14 +85,16 @@
 				teamcityUrl : options.teamcityUrl,
 				id : buildStage.id,
 				name : buildStage.name,
-				refreshTimeout : options.refreshTimeout
+				refreshTimeout : options.refreshTimeout,
+				branch : options.branch
 			})
 		};
 	};
 
-	var BuildStage = function(projectDisplay, options){
+	var BuildStage = function(projectDisplay, options){	
 		var BUILD_STAGE_CLASS = 'build-stage',
-			buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:' + options.id + '),lookupLimit:10,running:any',
+			branchName = !!options.branch ? 'branch:name:'+options.branch+',' : '',
+			buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator='+branchName+'buildType:(id:' + options.id + '),lookupLimit:10,running:any',
 			buildStageElement,
 			statusClasses = {
 				'FAILURE' : 'failed',

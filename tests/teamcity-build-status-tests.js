@@ -131,6 +131,26 @@
 		equal(mockBuildStageRequestHandler.requestOptions[1].url, teamcityUrl + '/guestAuth/app/rest/builds?locator=buildType:(id:'+twoBuildStages[1].id+'),lookupLimit:10,running:any');
 	});
 
+	test('When branch is specified, Then url contains branch name', function(){
+		var branchName = "A branch" + Math.random(),
+			buildStageId = "bt1",
+			teamcityUrl = 'teamcityUrl',
+			mockBuildStageRequestHandler = new MockBuildStageRequestHandler(),
+			buildStages = [
+				{
+					id : buildStageId,
+					name : 'aBuildStage1'
+				}
+			];
+		$.ajax = new FakeProjectAjaxRequestHandler(buildStages, mockBuildStageRequestHandler).handle;
+		$(DISPLAY_AREA_DIV_ID).teamCityBuildStatus({
+			teamcityUrl : teamcityUrl,
+			projectId : 'projectId',
+			branch : branchName
+		});
+		equal(mockBuildStageRequestHandler.requestOptions[0].url, teamcityUrl + '/guestAuth/app/rest/builds?locator=branch:name:'+branchName+',buildType:(id:'+buildStageId+'),lookupLimit:10,running:any');
+	});
+
 	test('Display shows failing build stage', function(){
 		var buildStageId = 'bt12',
 			buildStage = [
@@ -377,7 +397,7 @@
 	var MockBuildStageRequestHandler = function(){
 		this.requestOptions = [];
 		this.handle = function(options){
-			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=buildType') > 0){
+			if (options.url.indexOf('/guestAuth/app/rest/builds?locator=') > 0){
 				this.requestOptions.push(options);
 			}
 		};
