@@ -10,18 +10,30 @@
 	<div id="buildStatus">
 	</div>
 	<script>
-		// $.ajax({
-		// 	url: 'http://teamcity.dev/guestAuth/app/rest/builds?locator=buildType:(id:bt439),lookupLimit:2,running:any',
-		// 	headers : {
-		// 		accept: 'application/json',
-		// 	},
-		// 	success : function(data){
-		// 		console.log(data);
-		// 	}
-		// });
+		$.ajax({
+			url: 'http://teamcity.dev/guestAuth/app/rest/builds?locator=branch:name:ShopDesktopCheckoutAmends,buildType:(id:bt450),lookupLimit:2,running:any',
+			headers : {
+				accept: 'application/json',
+			},
+			success : function(data){
+				console.log('branch:');
+				console.log(data);
+			}
+		});
+
+		$.ajax({
+			url: 'http://teamcity.dev/guestAuth/app/rest/builds?locator=buildType:(id:bt450),lookupLimit:2,running:any',
+			headers : {
+				accept: 'application/json',
+			},
+			success : function(data){
+				console.log('full:');
+				console.log(data);
+			}
+		});
 
 		// $.ajax({
-		// 	url: 'http://teamcity.dev/guestAuth/app/rest/projects/id:project90',
+		// 	url: 'http://teamcity.dev/guestAuth/app/rest/projects/id:project65',
 		// 	headers : {
 		// 		accept: 'application/json',
 		// 	},
@@ -33,7 +45,7 @@
 
 		$('#buildStatus').teamCityBuildStatus({
 			teamcityUrl : 'http://teamcity.dev',
-			projectId : 'project90',
+			projectId : 'project65',
 			projectName: 'Test Project',
 			refreshTimeout: 5000
 		});
