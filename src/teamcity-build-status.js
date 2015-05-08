@@ -1,15 +1,15 @@
 (function($, undefined){
 
-	$.fn.teamCityBuildStatus = function(options){
+	$.fn.jenkinsBuildStatus = function(options){
 		return this.each(function(){
-			new TeamCityBuildStatus(this, options);
+			new JenkinsBuildStatus(this, options);
 		});
 	};
 
-	var TeamCityBuildStatus = function(element, options){
+	var JenkinsBuildStatus = function(element, options){
 		var projectBuild = new ProjectBuild(element, options),
-			buildStageRepository = new BuildStageRepository(options),
-			buildStageFactory = new BuildStageFactory(projectBuild, options);
+			jenkinsAllJobsRepository = new JenkinsAllJobsRepository(options),
+			buildStageFactory = new BuildStageFactory(projectBuild, jenkinsAllJobsRepository, options);
 
 		function init(){
 			buildStageRepository.getAll(function(buildStages){
@@ -95,22 +95,33 @@
 		};
 	};
 
-	var BuildStageFactory = function(projectDisplay, options){
+	var BuildStageFactory = function(projectDisplay, jenkinsAllJobsRepository, options){
 		this.create = function(buildStage){
-			return new BuildStage(projectDisplay, {
-				teamcityUrl : options.teamcityUrl,
-				id : buildStage.id,
-				name : buildStage.name,
+			return new BuildStage(projectDisplay, jenkinsAllJobsRepository, {
+				jenkinsUrl : options.jenkinsUrl,
+				groupName : buildStage.groupName,
 				refreshTimeout : options.refreshTimeout,
 				branch : options.branch
 			})
 		};
 	};
 
-	var BuildStage = function(projectDisplay, options){	
+	// var BuildStageFactory = function(projectDisplay, options){
+	// 	this.create = function(buildStage){
+	// 		return new BuildStage(projectDisplay, {
+	// 			teamcityUrl : options.teamcityUrl,
+	// 			id : buildStage.id,
+	// 			name : buildStage.name,
+	// 			refreshTimeout : options.refreshTimeout,
+	// 			branch : options.branch
+	// 		})
+	// 	};
+	// };
+
+	var BuildStage = function(projectDisplay, jenkinsAllJobsRepository, options){	
 		var BUILD_STAGE_CLASS = 'build-stage',
 			branchName = !!options.branch ? 'branch:name:'+options.branch+',' : '',
-			buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator='+branchName+'buildType:(id:' + options.id + '),lookupLimit:10,running:any',
+			//buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator='+branchName+'buildType:(id:' + options.id + '),lookupLimit:10,running:any',
 			buildStageElement,
 			statusClasses = {
 				'FAILURE' : 'failed',
@@ -119,10 +130,12 @@
 
 		function init(){
 			show();
-			checkStatus();
-			if (!!options.refreshTimeout){
-				setInterval(checkStatus, options.refreshTimeout);	
-			}
+			//TODO jenkinsAllJobsRepository get only the relavant jobs
+			updateStatus();
+			// checkStatus();
+			// if (!!options.refreshTimeout){
+			// 	setInterval(checkStatus, options.refreshTimeout);	
+			// }
 		}
 
 		function show(){
@@ -130,25 +143,25 @@
 					.addClass('name')
 					.text(options.name);
 			buildStageElement = $('<div>')
-				.attr('id', options.id)
+				.attr('id', options.groupName)
 				.addClass(BUILD_STAGE_CLASS)
 				.append(nameElement);
 			projectDisplay.showBuild(buildStageElement);
 		}
 
-		function checkStatus(){
-			$.ajax({
-				url : buildStageStatusUrl,
-				headers : {
-					accept : 'application/json'
-				},
-				success : function(statusResults){
-					if (statusResults.build.length > 0){
-						updateStatus(statusResults.build[0]);
-					}
-				}
-			});
-		};
+		// function checkStatus(){
+		// 	$.ajax({
+		// 		url : buildStageStatusUrl,
+		// 		headers : {
+		// 			accept : 'application/json'
+		// 		},
+		// 		success : function(statusResults){
+		// 			if (statusResults.build.length > 0){
+		// 				updateStatus(statusResults.build[0]);
+		// 			}
+		// 		}
+		// 	});
+		// };
 
 		function updateStatus(buildStatus){
 			buildStageElement
@@ -166,4 +179,64 @@
 
 		init();
 	};
+
+	// var BuildStage = function(projectDisplay, options){	
+	// 	var BUILD_STAGE_CLASS = 'build-stage',
+	// 		branchName = !!options.branch ? 'branch:name:'+options.branch+',' : '',
+	// 		buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator='+branchName+'buildType:(id:' + options.id + '),lookupLimit:10,running:any',
+	// 		buildStageElement,
+	// 		statusClasses = {
+	// 			'FAILURE' : 'failed',
+	// 			'SUCCESS' : 'success'
+	// 		};
+
+	// 	function init(){
+	// 		show();
+	// 		checkStatus();
+	// 		if (!!options.refreshTimeout){
+	// 			setInterval(checkStatus, options.refreshTimeout);	
+	// 		}
+	// 	}
+
+	// 	function show(){
+	// 		var nameElement = $('<span>')
+	// 				.addClass('name')
+	// 				.text(options.name);
+	// 		buildStageElement = $('<div>')
+	// 			.attr('id', options.id)
+	// 			.addClass(BUILD_STAGE_CLASS)
+	// 			.append(nameElement);
+	// 		projectDisplay.showBuild(buildStageElement);
+	// 	}
+
+	// 	function checkStatus(){
+	// 		$.ajax({
+	// 			url : buildStageStatusUrl,
+	// 			headers : {
+	// 				accept : 'application/json'
+	// 			},
+	// 			success : function(statusResults){
+	// 				if (statusResults.build.length > 0){
+	// 					updateStatus(statusResults.build[0]);
+	// 				}
+	// 			}
+	// 		});
+	// 	};
+
+	// 	function updateStatus(buildStatus){
+	// 		buildStageElement
+	// 			.prop('class', BUILD_STAGE_CLASS)
+	// 			.addClass(statusClasses[buildStatus.status])
+	// 			.toggleClass('running', !!buildStatus.running);
+			
+	// 		if (buildStatus.status === 'FAILURE'){
+	// 			projectDisplay.hasFailed(options.id);
+	// 		}
+	// 		else {
+	// 			projectDisplay.hasPassed(options.id);
+	// 		}
+	// 	}
+
+	// 	init();
+	// };
 })(jQuery);
