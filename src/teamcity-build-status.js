@@ -63,17 +63,33 @@
 		};
 	};
 
-	var BuildStageRepository = function(options){
-		var GET_BUILD_STAGES_URL = '/guestAuth/app/rest/projects/id:';
+	// var BuildStageRepository = function(options){
+	// 	var GET_BUILD_STAGES_URL = '/view/All/api/json';
 
-		this.getAll = function(callback){
+	// 	this.getAll = function(callback){
+	// 		$.ajax({
+	// 			url : options.teamcityUrl + GET_BUILD_STAGES_URL,
+	// 			headers : {
+	// 				accept : 'application/json'
+	// 			}, 
+	// 			success : function(result){
+	// 				callback(result.jobs);
+	// 			}
+	// 		});
+	// 	};
+	// };
+
+	var JenkinsAllJobsRepository = function(options){
+		var GET_ALL_JOBS_URL = '/view/All/api/json';
+
+		this.getAllJobs = function(callback){
 			$.ajax({
-				url : options.teamcityUrl + GET_BUILD_STAGES_URL + options.projectId,
+				url : options.teamcityUrl + GET_BUILD_STAGES_URL,
 				headers : {
 					accept : 'application/json'
 				}, 
 				success : function(result){
-					callback(result.buildTypes.buildType);
+					callback(result.jobs);
 				}
 			});
 		};
