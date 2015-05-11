@@ -10,30 +10,8 @@
 	<div id="buildStatus">
 	</div>
 	<script>
-		$.ajax({
-			url: 'http://teamcity.dev/guestAuth/app/rest/builds?locator=branch:name:ShopDesktopCheckoutAmends,buildType:(id:bt450),lookupLimit:2,running:any',
-			headers : {
-				accept: 'application/json',
-			},
-			success : function(data){
-				console.log('branch:');
-				console.log(data);
-			}
-		});
-
-		$.ajax({
-			url: 'http://teamcity.dev/guestAuth/app/rest/builds?locator=buildType:(id:bt450),lookupLimit:2,running:any',
-			headers : {
-				accept: 'application/json',
-			},
-			success : function(data){
-				console.log('full:');
-				console.log(data);
-			}
-		});
-
 		// $.ajax({
-		// 	url: 'http://teamcity.dev/guestAuth/app/rest/projects/id:project65',
+		// 	url: 'http://jenkins.dev/view/All/api/json',
 		// 	headers : {
 		// 		accept: 'application/json',
 		// 	},
@@ -41,12 +19,10 @@
 		// 		console.log(data);
 		// 	}
 		// });
-		
 
-		$('#buildStatus').teamCityBuildStatus({
-			teamcityUrl : 'http://teamcity.dev',
-			projectId : 'project65',
-			projectName: 'Test Project',
+		$('#buildStatus').jenkinsBuildStatus({
+			jenkinsyUrl : 'http://jenkins.dev',			
+			projectGroupName: 'Bayer Identification App',
 			refreshTimeout: 5000
 		});
 	</script>
