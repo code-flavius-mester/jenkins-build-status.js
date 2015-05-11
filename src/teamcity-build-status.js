@@ -7,25 +7,23 @@
 	};
 
 	var JenkinsBuildStatus = function(element, options){
-		var projectBuild = new ProjectBuild(element, options),
-			jenkinsAllJobsRepository = new JenkinsAllJobsRepository(options);
-			
-			buildStageFactory = new BuildStageFactory(projectBuild, jenkinsAllJobsRepository, options);
-			
-			jenkinsAllJobsRepository.getAllJobs(function(result){
-					console.log(result);
-				});
-
+		
 		function init(){
-			jenkinsAllJobsRepository.getAllJobs(function(buildStages){
-				buildStages.forEach(buildStageFactory.create);	
-			// if (!!options.refreshTimeout){
-			// 	setInterval(init, options.refreshTimeout);	
-			// }
-			});
-		}
+			$("div[id='" + element.id + "']").children().remove();		
 
+			var projectBuild = new ProjectBuild(element, options);
+			var jenkinsAllJobsRepository = new JenkinsAllJobsRepository(options);			
+			var buildStageFactory = new BuildStageFactory(projectBuild, jenkinsAllJobsRepository, options);
+
+			jenkinsAllJobsRepository.getAllJobs(function(buildStages){				
+				buildStages.forEach(buildStageFactory.create);			
+			});
+			
+		}
 		init();
+		if (!!options.refreshTimeout){
+				setInterval(init, options.refreshTimeout);	
+		}
 	};
 
 	var ProjectBuild = function(element, options){
@@ -36,9 +34,9 @@
 		function createElement(){
 			var title = $('<div>')
 				.addClass('title')
-				.text(options.projectName);
+				.text(options.projectGroupName);
 			return $('<div>')
-				.attr('id', options.projectId)
+				.attr('id', options.projectGroupName)
 				.addClass(PROJECT_CLASS)
 				.addClass('success')
 				.append(title)
@@ -82,11 +80,11 @@
 				}, 
 				success : function(result){
 					var subSet = [];
-					function filterProjectBuilds(element, index, array) {
+					
+					result.jobs.forEach(function filterProjectBuilds(element, index, array) {
 					  if(element.name.indexOf(options.projectGroupName) == 0)
 					  	subSet.push(element);
-					}
-					result.jobs.forEach(filterProjectBuilds);
+					});
 					callback(subSet);
 				}
 			});
@@ -113,8 +111,7 @@
 				'notbuilt_anime' : 'FAILURE',
 
 				'aborted' : 'FAILURE',
-				'aborted_anime' : 'FAILURE',
-				
+				'aborted_anime' : 'FAILURE'		
 				
 			};
 
@@ -135,7 +132,6 @@
 		}
 
 		function updateStatus(color){
-			console.log(statusClasses[color]);
 			buildStageElement
 				.prop('class', BUILD_STAGE_CLASS)
 				.addClass(statusClasses[color])
@@ -152,63 +148,4 @@
 		init();
 	};
 
-	// var BuildStage = function(projectDisplay, options){	
-	// 	var BUILD_STAGE_CLASS = 'build-stage',
-	// 		branchName = !!options.branch ? 'branch:name:'+options.branch+',' : '',
-	// 		buildStageStatusUrl = options.teamcityUrl + '/guestAuth/app/rest/builds?locator='+branchName+'buildType:(id:' + options.id + '),lookupLimit:10,running:any',
-	// 		buildStageElement,
-	// 		statusClasses = {
-	// 			'FAILURE' : 'failed',
-	// 			'SUCCESS' : 'success'
-	// 		};
-
-	// 	function init(){
-	// 		show();
-	// 		checkStatus();
-	// 		if (!!options.refreshTimeout){
-	// 			setInterval(checkStatus, options.refreshTimeout);	
-	// 		}
-	// 	}
-
-	// 	function show(){
-	// 		var nameElement = $('<span>')
-	// 				.addClass('name')
-	// 				.text(options.name);
-	// 		buildStageElement = $('<div>')
-	// 			.attr('id', options.id)
-	// 			.addClass(BUILD_STAGE_CLASS)
-	// 			.append(nameElement);
-	// 		projectDisplay.showBuild(buildStageElement);
-	// 	}
-
-	// 	function checkStatus(){
-	// 		$.ajax({
-	// 			url : buildStageStatusUrl,
-	// 			headers : {
-	// 				accept : 'application/json'
-	// 			},
-	// 			success : function(statusResults){
-	// 				if (statusResults.build.length > 0){
-	// 					updateStatus(statusResults.build[0]);
-	// 				}
-	// 			}
-	// 		});
-	// 	};
-
-	// 	function updateStatus(buildStatus){
-	// 		buildStageElement
-	// 			.prop('class', BUILD_STAGE_CLASS)
-	// 			.addClass(statusClasses[buildStatus.status])
-	// 			.toggleClass('running', !!buildStatus.running);
-			
-	// 		if (buildStatus.status === 'FAILURE'){
-	// 			projectDisplay.hasFailed(options.id);
-	// 		}
-	// 		else {
-	// 			projectDisplay.hasPassed(options.id);
-	// 		}
-	// 	}
-
-	// 	init();
-	// };
 })(jQuery);
